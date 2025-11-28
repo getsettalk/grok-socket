@@ -13,7 +13,7 @@ Pure PHP, Socket.IO-like WebSocket server with:
 
 ## Install
 ```bash
-composer require grok/socket
+composer require grok-s/socket
 ```
 
 

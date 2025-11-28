@@ -1,5 +1,5 @@
 {
-    "name": "grok/ai/socket",
+    "name": "grok-s/socket",
     "description": "Full-featured, open-source WebSocket library for PHP (Socket.IO-like: events, rooms, ACKs, auth, encryption, DB integration)",
     "type": "library",
     "version": "1.0.1",
