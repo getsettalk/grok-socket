@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>GrokSocket Reconnect Client</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        #log { border: 1px solid #ccc; height: 300px; overflow-y: scroll; padding: 10px; margin: 10px 0; }
+        input { width: 300px; padding: 8px; }
+        button { padding: 8px 16px; }
+        .status { color: green; } .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>GrokSocket Auto-Reconnect Client</h1>
+    <div id="status" class="status">Connecting...</div>
+    <div id="log"></div>
+    <input type="text" id="msg" placeholder="Type message...">
+    <button onclick="sendMsg()">Send</button>
+
+    <script>
+        let socket;
+        let reconnectAttempts = 0;
+        const maxReconnects = 10;
+        const reconnectDelay = 2000; // ms
+
+        function connect() {
+            socket = new WebSocket('ws://localhost:8080');
+
+            socket.onopen = () => {
+                document.getElementById('status').innerHTML = '<span class="status">Connected!</span>';
+                document.getElementById('log').innerHTML += '<div>Connected to server</div>';
+                reconnectAttempts = 0;
+            };
+
+            socket.onmessage = (e) => {
+                try {
+                    const data = JSON.parse(e.data);
+                    document.getElementById('log').innerHTML += `<div><strong>${data.event || 'msg'}:</strong> ${JSON.stringify(data.data)}</div>`;
+                    document.getElementById('log').scrollTop = document.getElementById('log').scrollHeight;
+                } catch (err) {
+                    document.getElementById('log').innerHTML += `<div>Error parsing: ${e.data}</div>`;
+                }
+            };
+
+            socket.onclose = (event) => {
+                document.getElementById('status').innerHTML = '<span class="error">Disconnected (Code: ' + event.code + ')</span>';
+                document.getElementById('log').innerHTML += '<div>Disconnected. Attempting reconnect...</div>';
+                if (reconnectAttempts < maxReconnects) {
+                    setTimeout(() => {
+                        reconnectAttempts++;
+                        connect();
+                    }, reconnectDelay * reconnectAttempts); // Exponential backoff
+                } else {
+                    document.getElementById('log').innerHTML += '<div>Max reconnects reached. Giving up.</div>';
+                }
+            };
+
+            socket.onerror = (err) => {
+                document.getElementById('log').innerHTML += '<div class="error">WebSocket error: ' + err + '</div>';
+            };
+        }
+
+        function sendMsg() {
+            const input = document.getElementById('msg');
+            const msg = input.value.trim();
+            if (msg && socket && socket.readyState === WebSocket.OPEN) {
+                socket.send(JSON.stringify({
+                    event: 'chat',
+                    data: msg
+                }));
+                input.value = '';
+            }
+        }
+
+        // Enter to send
+        document.getElementById('msg').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMsg();
+        });
+
+        // Start connection
+        connect();
+    </script>
+</body>
+</html>

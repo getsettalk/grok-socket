@@ -1,0 +1,21 @@
+{
+    "name": "grok/socket",
+    "description": "Full-featured, open-source WebSocket library for PHP (Socket.IO-like: events, rooms, ACKs, auth, encryption, DB integration)",
+    "type": "library",
+    "version": "1.0.1",
+    "license": "MIT",
+    "authors": [
+        {"name": "sujeet", "email": "rajrock7254@gmail.com"}
+    ],
+    "require": {
+        "php": ">=8.0",
+        "ext-sockets": "*",
+        "ext-openssl": "*"
+    },
+    "autoload": {
+        "psr-4": {"Grok\\Socket\\": "src/"}
+    },
+    "suggest": {
+        "firebase/php-jwt": "For JWT authentication in middleware"
+    }
+}
