@@ -14,6 +14,8 @@ Pure PHP, Socket.IO-like WebSocket server with:
 ## Install
 ```bash
 composer require grok/socket
+```
+
 
 ## Why GrokSocket?
 - **Easy to Use**: API like Socket.IO for quick setup.
